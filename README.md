@@ -4,8 +4,6 @@ Use [Pi](https://pi.dev) from Neovim without leaving your editor.
 
 This plugin keeps a single `pi --mode rpc` process running in the background, so repeated asks are fast and continue the same Pi session. It shows a small floating progress window while Pi thinks, runs tools, and edits files.
 
-## What you get
-
 - Ask Pi about the current file with `,pi`.
 - Ask Pi about a visual selection with visual `,pi`.
 - Reuses one background Pi process instead of starting Pi from scratch every time.
@@ -136,9 +134,3 @@ If your leader is not comma, replace `,` with your leader key.
 :PiTerminal
 :PiTerminalNew
 ```
-
-## Notes
-
-- The plugin talks to Pi directly through RPC; it does not depend on another Neovim Pi plugin.
-- The first ask starts the background process. Later asks reuse it.
-- If Pi edits files on disk, loaded unmodified buffers are refreshed automatically.
