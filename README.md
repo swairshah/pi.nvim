@@ -21,7 +21,8 @@ A small Neovim wrapper around [pablopunk/pi.nvim](https://github.com/pablopunk/p
 
 ```lua
 {
-  "YOUR_GITHUB_USER/pi-background.nvim",
+  "pi-background.nvim",
+  url = "git@github.com:swairshah/pi-background.nvim.git",
   dependencies = { "pablopunk/pi.nvim" },
   opts = {},
 }
@@ -41,7 +42,8 @@ For a local checkout:
 
 ```lua
 {
-  "YOUR_GITHUB_USER/pi-background.nvim",
+  "pi-background.nvim",
+  url = "git@github.com:swairshah/pi-background.nvim.git",
   dependencies = { "pablopunk/pi.nvim" },
   opts = {
     provider = "openai-codex",
