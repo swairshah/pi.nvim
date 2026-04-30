@@ -1,8 +1,9 @@
 local M = {}
 
 local defaults = {
-  provider = 'openai-codex',
-  model = 'gpt-5.3-codex-spark',
+  -- nil means: let the installed `pi` CLI choose its normal default.
+  provider = nil,
+  model = nil,
   session_mode = 'continue', -- continue | new | ephemeral
   log_path = vim.fn.stdpath('state') .. '/pi-background.log',
   max_context_lines = 300,
