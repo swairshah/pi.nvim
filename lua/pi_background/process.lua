@@ -1,6 +1,7 @@
 local config = require('pi_background.config')
 local ui = require('pi_background.ui')
 local buffers = require('pi_background.buffers')
+local log = require('pi_background.log')
 
 local M = {}
 
@@ -15,7 +16,7 @@ local state = {
 }
 
 local function notify(message, level)
-  vim.notify(message, level or vim.log.levels.INFO, { title = 'pi.nvim' })
+  vim.notify(message, level or vim.log.levels.INFO, { title = 'pi-background.nvim' })
 end
 
 local function is_process_running()
@@ -75,6 +76,8 @@ local function handle_response(event)
 end
 
 local function handle_event(event)
+  log.append('rpc_event', event)
+
   if event.type == 'response' then
     handle_response(event)
   elseif event.type == 'agent_start' then
@@ -136,6 +139,7 @@ function M.start()
   state.stdout_tail = ''
   state.stderr_tail = ''
   state.streaming = false
+  log.append('start', { cmd = get_pi_cmd() })
   ui.set_streaming(false)
   ui.set_status('starting', 'Starting background Pi')
 
@@ -232,6 +236,7 @@ function M.send(message)
     return
   end
 
+  log.append('prompt', { message = message })
   ui.clear_history()
   ui.set_status('starting', 'Sending prompt')
 

@@ -1,6 +1,6 @@
 # pi-background.nvim
 
-A small Neovim wrapper around [pablopunk/pi.nvim](https://github.com/pablopunk/pi.nvim) that keeps a single `pi --mode rpc` process running in the background and reuses it for `,pi` prompts.
+A standalone Neovim plugin that keeps one `pi --mode rpc` process running in the background and reuses it for `,pi` prompts.
 
 ## Features
 
@@ -10,12 +10,12 @@ A small Neovim wrapper around [pablopunk/pi.nvim](https://github.com/pablopunk/p
 - Model picker backed by `pi --list-models`.
 - Defaults to `openai-codex/gpt-5.3-codex-spark`.
 - Defaults to `--continue` sessions.
+- No dependency on `pablopunk/pi.nvim`; this plugin talks to Pi RPC directly.
 
 ## Requirements
 
 - Neovim 0.10+
 - `pi` CLI installed and authenticated
-- `pablopunk/pi.nvim`
 
 ## Lazy.nvim
 
@@ -23,7 +23,6 @@ A small Neovim wrapper around [pablopunk/pi.nvim](https://github.com/pablopunk/p
 {
   "pi-background.nvim",
   url = "git@github.com:swairshah/pi-background.nvim.git",
-  dependencies = { "pablopunk/pi.nvim" },
   opts = {},
 }
 ```
@@ -33,7 +32,6 @@ For a local checkout:
 ```lua
 {
   dir = "~/work/code/pi-background.nvim",
-  dependencies = { "pablopunk/pi.nvim" },
   opts = {},
 }
 ```
@@ -44,7 +42,6 @@ For a local checkout:
 {
   "pi-background.nvim",
   url = "git@github.com:swairshah/pi-background.nvim.git",
-  dependencies = { "pablopunk/pi.nvim" },
   opts = {
     provider = "openai-codex",
     model = "gpt-5.3-codex-spark",
@@ -72,7 +69,7 @@ With the default `<leader>p` prefix:
 - `,pS` stop the background Pi process
 - `,pm` choose model
 - `,pM` show current model/session
-- `,pl` open Pi log
+- `,pl` open plugin log
 - `,pt` optional persistent Pi terminal
 
 ## Commands
@@ -88,5 +85,6 @@ With the default `<leader>p` prefix:
 - `:PiUseModel` reset to Pi CLI default
 - `:PiCurrentModel`
 - `:PiSessionMode continue|new|ephemeral`
+- `:PiLog`
 - `:PiTerminal`
 - `:PiTerminalNew`

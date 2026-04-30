@@ -5,11 +5,11 @@ local buffers = require('pi_background.buffers')
 local M = {}
 
 local function notify(message, level)
-  vim.notify(message, level or vim.log.levels.INFO, { title = 'pi.nvim' })
+  vim.notify(message, level or vim.log.levels.INFO, { title = 'pi-background.nvim' })
 end
 
 local function context_module()
-  return require('pi.context')
+  return require('pi_background.context')
 end
 
 local function ensure_file_backed_buffer(command_name)

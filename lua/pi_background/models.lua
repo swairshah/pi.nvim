@@ -4,17 +4,17 @@ local process = require('pi_background.process')
 local M = {}
 
 local function notify(message, level)
-  vim.notify(message, level or vim.log.levels.INFO, { title = 'pi.nvim' })
+  vim.notify(message, level or vim.log.levels.INFO, { title = 'pi-background.nvim' })
 end
 
 function M.current()
   local cfg = config.get_pi_config()
-  notify('pi.nvim model: ' .. config.model_label(cfg.provider, cfg.model) .. ' | session: ' .. (cfg.session_mode or 'new'))
+  notify('Pi model: ' .. config.model_label(cfg.provider, cfg.model) .. ' | session: ' .. (cfg.session_mode or 'new'))
 end
 
 function M.use(provider, model)
   config.set_model(provider, model)
-  notify('pi.nvim model set to: ' .. config.model_label(provider, model))
+  notify('Pi model set to: ' .. config.model_label(provider, model))
   process.restart()
 end
 
@@ -58,7 +58,7 @@ function M.session_mode(mode)
   local valid = { continue = true, new = true, ephemeral = true }
 
   if not mode then
-    notify('pi.nvim session mode: ' .. (config.get_pi_config().session_mode or 'new'))
+    notify('Pi session mode: ' .. (config.get_pi_config().session_mode or 'new'))
     return
   end
 
@@ -68,7 +68,7 @@ function M.session_mode(mode)
   end
 
   config.set_session_mode(mode)
-  notify('pi.nvim session mode set to: ' .. mode)
+  notify('Pi session mode set to: ' .. mode)
   process.restart()
 end
 

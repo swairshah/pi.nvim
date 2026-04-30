@@ -1,7 +1,7 @@
 local M = {}
 
 local function context_module()
-  return require('pi.context')
+  return require('pi_background.context')
 end
 
 local function normalize_path(path)

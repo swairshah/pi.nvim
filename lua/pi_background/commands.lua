@@ -3,11 +3,12 @@ local process = require('pi_background.process')
 local prompt = require('pi_background.prompt')
 local models = require('pi_background.models')
 local terminal = require('pi_background.terminal')
+local log = require('pi_background.log')
 
 local M = {}
 
 local function notify(message, level)
-  vim.notify(message, level or vim.log.levels.INFO, { title = 'pi.nvim' })
+  vim.notify(message, level or vim.log.levels.INFO, { title = 'pi-background.nvim' })
 end
 
 function M.register_commands()
@@ -17,8 +18,9 @@ function M.register_commands()
   vim.api.nvim_create_user_command('PiBgStop', process.stop, { desc = 'Stop the background Pi process' })
   vim.api.nvim_create_user_command('PiBgRestart', process.restart, { desc = 'Restart the background Pi process' })
   vim.api.nvim_create_user_command('PiBgStatus', process.status, { desc = 'Show background Pi status' })
-  vim.api.nvim_create_user_command('PiChooseModel', models.choose, { desc = 'Choose pi.nvim provider/model from `pi --list-models`' })
-  vim.api.nvim_create_user_command('PiCurrentModel', models.current, { desc = 'Show current pi.nvim provider/model and session mode' })
+  vim.api.nvim_create_user_command('PiChooseModel', models.choose, { desc = 'Choose Pi provider/model from `pi --list-models`' })
+  vim.api.nvim_create_user_command('PiCurrentModel', models.current, { desc = 'Show current Pi provider/model and session mode' })
+  vim.api.nvim_create_user_command('PiLog', log.open, { desc = 'Open pi-background.nvim log' })
   vim.api.nvim_create_user_command('PiTerminal', terminal.toggle, { desc = 'Toggle a persistent Pi terminal' })
   vim.api.nvim_create_user_command('PiTerminalNew', terminal.new_session, { desc = 'Open a persistent Pi terminal in a fresh saved session' })
   vim.api.nvim_create_user_command('PiUseModel', function(opts)
@@ -29,7 +31,7 @@ function M.register_commands()
     else
       notify('Usage: :PiUseModel <provider> <model> or :PiUseModel to use CLI default', vim.log.levels.ERROR)
     end
-  end, { nargs = '*', desc = 'Set pi.nvim provider/model; no args resets to pi CLI default' })
+  end, { nargs = '*', desc = 'Set Pi provider/model; no args resets to Pi CLI default' })
   vim.api.nvim_create_user_command('PiSessionMode', function(opts)
     models.session_mode(opts.args)
   end, {
@@ -37,7 +39,7 @@ function M.register_commands()
     complete = function()
       return { 'continue', 'new', 'ephemeral' }
     end,
-    desc = 'Set pi.nvim session mode: continue, new, or ephemeral',
+    desc = 'Set Pi session mode: continue, new, or ephemeral',
   })
 end
 
