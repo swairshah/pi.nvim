@@ -11,6 +11,7 @@ local state = {
   close_timer = nil,
   status = 'idle',
   history = {},
+  show_lines = {},
   spinner_idx = 0,
   streaming = false,
 }
@@ -58,15 +59,45 @@ local function status_line()
   return prefix .. (labels[state.status] or state.status)
 end
 
+local function split_lines(text)
+  local lines = {}
+  text = text:gsub('\r\n', '\n'):gsub('\r', '\n')
+  if text == '' then
+    return lines
+  end
+  for line in (text .. '\n'):gmatch('(.-)\n') do
+    lines[#lines + 1] = line
+  end
+  return lines
+end
+
+local function compact_blank_edges(lines)
+  while #lines > 0 and lines[1] == '' do
+    table.remove(lines, 1)
+  end
+  while #lines > 0 and lines[#lines] == '' do
+    table.remove(lines)
+  end
+  return lines
+end
+
 function M.render()
   if not is_buffer_valid() then
     return
   end
 
   local lines = { status_line() }
-  local start_idx = math.max(1, #state.history - 3)
+
+  local start_idx = math.max(1, #state.history - 2)
   for i = start_idx, #state.history do
     lines[#lines + 1] = state.history[i]
+  end
+
+  if #state.show_lines > 0 then
+    if #lines > 1 then
+      lines[#lines + 1] = ''
+    end
+    vim.list_extend(lines, compact_blank_edges(vim.deepcopy(state.show_lines)))
   end
 
   vim.bo[state.bufnr].modifiable = true
@@ -74,9 +105,11 @@ function M.render()
   vim.bo[state.bufnr].modifiable = false
 
   if is_window_valid() then
+    local cfg = config.get()
+    local max_height = math.max(3, math.floor(vim.o.lines * (cfg.window.max_height_fraction or 0.35)))
     pcall(vim.api.nvim_win_set_config, state.winid, vim.tbl_extend('force', vim.api.nvim_win_get_config(state.winid), {
       title = title(),
-      height = math.min(math.max(#lines, 1), math.max(3, math.floor(vim.o.lines * 0.25))),
+      height = math.min(math.max(#lines, 1), max_height),
     }))
   end
 end
@@ -96,6 +129,8 @@ function M.ensure()
     vim.bo[state.bufnr].swapfile = false
     vim.bo[state.bufnr].modifiable = false
     vim.api.nvim_buf_set_name(state.bufnr, 'pi-background://status')
+    vim.keymap.set('n', 'q', M.close, { buffer = state.bufnr, silent = true, desc = 'Close Pi popup' })
+    vim.keymap.set('n', '<Esc>', M.close, { buffer = state.bufnr, silent = true, desc = 'Close Pi popup' })
   end
 
   if not is_window_valid() then
@@ -173,10 +208,37 @@ function M.clear_history()
   state.history = {}
 end
 
+function M.clear_show()
+  state.show_lines = {}
+end
+
 function M.push(message)
   if message and message ~= '' then
     state.history[#state.history + 1] = message
   end
+end
+
+function M.append_show(text)
+  if not text or text == '' then
+    return
+  end
+  local new_lines = split_lines(text)
+  if #new_lines == 0 then
+    return
+  end
+
+  if #state.show_lines == 0 then
+    state.show_lines = new_lines
+  elseif text:sub(1, 1) == '\n' then
+    vim.list_extend(state.show_lines, new_lines)
+  else
+    state.show_lines[#state.show_lines] = state.show_lines[#state.show_lines] .. new_lines[1]
+    for i = 2, #new_lines do
+      state.show_lines[#state.show_lines + 1] = new_lines[i]
+    end
+  end
+
+  M.ensure()
 end
 
 function M.set_status(status, message, opts)

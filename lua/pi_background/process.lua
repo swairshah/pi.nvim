@@ -13,6 +13,10 @@ local state = {
   streaming = false,
   request_id = 0,
   file_snapshots = {},
+  show_parser = {
+    buffer = '',
+    in_show = false,
+  },
 }
 
 local function notify(message, level)
@@ -70,6 +74,49 @@ local function get_pi_cmd()
   return cmd
 end
 
+local function reset_show_parser()
+  state.show_parser.buffer = ''
+  state.show_parser.in_show = false
+end
+
+local function process_show_delta(delta)
+  if not delta or delta == '' then
+    return
+  end
+
+  local parser = state.show_parser
+  parser.buffer = parser.buffer .. delta
+
+  while parser.buffer ~= '' do
+    if parser.in_show then
+      local close_start, close_end = parser.buffer:find('</show>', 1, true)
+      if close_start then
+        ui.append_show(parser.buffer:sub(1, close_start - 1))
+        parser.buffer = parser.buffer:sub(close_end + 1)
+        parser.in_show = false
+      else
+        local keep = math.min(#parser.buffer, 6)
+        local emit_len = #parser.buffer - keep
+        if emit_len > 0 then
+          ui.append_show(parser.buffer:sub(1, emit_len))
+          parser.buffer = parser.buffer:sub(emit_len + 1)
+        end
+        break
+      end
+    else
+      local open_start, open_end = parser.buffer:find('<show>', 1, true)
+      if open_start then
+        parser.buffer = parser.buffer:sub(open_end + 1)
+        parser.in_show = true
+      else
+        local keep = math.min(#parser.buffer, 5)
+        parser.buffer = parser.buffer:sub(math.max(1, #parser.buffer - keep + 1))
+        break
+      end
+    end
+  end
+end
+
 local function handle_response(event)
   if event.success == false then
     local message = event.error or 'Pi request failed'
@@ -91,7 +138,11 @@ local function handle_event(event)
     ui.set_status('running_tool', 'Running tool: ' .. (event.toolName or 'unknown'))
   elseif event.type == 'message_update' then
     local delta = event.assistantMessageEvent
-    if delta and delta.type == 'error' then
+    if delta and delta.type == 'text_delta' then
+      process_show_delta(delta.delta)
+    elseif delta and delta.type == 'text_end' then
+      process_show_delta('\n')
+    elseif delta and delta.type == 'error' then
       local message = delta.reason or 'Pi error'
       ui.set_status('error', message)
       notify(message, vim.log.levels.ERROR)
@@ -142,6 +193,7 @@ function M.start()
   state.stdout_tail = ''
   state.stderr_tail = ''
   state.streaming = false
+  reset_show_parser()
   log.append('start', { cmd = get_pi_cmd() })
   ui.set_streaming(false)
   ui.set_status('starting', 'Starting background Pi')
@@ -240,7 +292,9 @@ function M.send(message)
   end
 
   log.append('prompt', { message = message })
+  reset_show_parser()
   ui.clear_history()
+  ui.clear_show()
   ui.set_status('starting', 'Sending prompt')
 
   if not M.start() then

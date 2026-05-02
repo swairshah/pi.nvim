@@ -12,7 +12,9 @@ This plugin keeps a single `pi --mode rpc` process running in the background, so
 - Lets you configure provider/model directly in your Lazy spec.
 - Reloads changed buffers after Pi edits files.
 - Includes a lightweight floating status window in the top-right corner.
-- Loads a bundled Neovim-only Pi extension placeholder.
+- Shows assistant text wrapped in `<show>...</show>` in that popup.
+- Keeps completed popups visible for 30 seconds by default.
+- Loads a bundled Neovim-only Pi extension that teaches Pi about `<show>` tags.
 - Lets you pass extra Pi extensions from your Lazy config while keeping your normally installed Pi extensions enabled.
 
 ## Requirements
@@ -93,9 +95,11 @@ Full example with session behavior and key prefix:
       position = "top-right", -- or "center"
       row = 1,
       col_offset = 2,
+      close_after_done_ms = 30000,
     },
 
-    -- Load the bundled Neovim-only Pi extension placeholder. Default: true.
+    -- Load the bundled Neovim-only Pi extension that teaches Pi about <show> tags.
+    -- Default: true.
     builtin_extension = true,
 
     -- Extra Pi extensions to load with this plugin. These are added with
@@ -156,7 +160,7 @@ If your leader is not comma, replace `,` with your leader key.
 
 ## Pi extensions
 
-pi.nvim loads one bundled Neovim-only Pi extension by default. Right now it is an intentional no-op placeholder. It exists so you can add Neovim-specific Pi behavior later without affecting normal terminal `pi` sessions.
+pi.nvim loads one bundled Neovim-only Pi extension by default. It tells Pi that it is running as a background Neovim agent and can display concise user-facing text by wrapping it in `<show>...</show>`. Text inside those tags is streamed into the pi.nvim popup.
 
 Your normal Pi extensions still load too. The plugin does not pass `--no-extensions` unless you configure `extensions = false`.
 
@@ -173,6 +177,8 @@ To add more extensions only for Neovim-launched Pi sessions:
   },
 }
 ```
+
+Use `<show>` judiciously: short summaries, important findings, final status, or tiny snippets. Large code blocks and logs should stay out of the popup.
 
 To turn off the bundled Neovim extension:
 

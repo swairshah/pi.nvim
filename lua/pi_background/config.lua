@@ -12,7 +12,7 @@ local defaults = {
   skills = true,
   extensions = true,
   tools = true,
-  -- Load the bundled Pi extension with Neovim-specific prompt guidance.
+  -- Load the bundled Neovim-only Pi extension.
   builtin_extension = true,
   -- Extra Pi extension files/directories to pass with --extension.
   -- These are loaded in addition to Pi's normal installed extensions.
@@ -25,11 +25,12 @@ local defaults = {
     position = 'top-right',
     row = 1,
     col_offset = 2,
-    close_after_done_ms = 1200,
+    close_after_done_ms = 30000,
     close_after_stop_ms = 900,
     width = 0.45,
     min_width = 40,
-    max_width = 60,
+    max_width = 70,
+    max_height_fraction = 0.35,
   },
 }
 
