@@ -11,7 +11,9 @@ This plugin keeps a single `pi --mode rpc` process running in the background, so
 - Uses your system Pi default model by default.
 - Lets you configure provider/model directly in your Lazy spec.
 - Reloads changed buffers after Pi edits files.
-- Includes a lightweight floating status window.
+- Includes a lightweight floating status window in the top-right corner.
+- Loads a bundled Pi extension with Neovim-specific prompt guidance.
+- Lets you pass extra Pi extensions from your Lazy config while keeping your normally installed Pi extensions enabled.
 
 ## Requirements
 
@@ -85,6 +87,23 @@ Full example with session behavior and key prefix:
 
     -- defaults to <leader>p; if your leader is comma, this means ,pi, ,pm, etc.
     keymap_prefix = "<leader>p",
+
+    -- Floating status window placement. Default is top-right.
+    window = {
+      position = "top-right", -- or "center"
+      row = 1,
+      col_offset = 2,
+    },
+
+    -- Load the bundled Neovim-aware Pi extension. Default: true.
+    builtin_extension = true,
+
+    -- Extra Pi extensions to load with this plugin. These are added with
+    -- `pi --extension ...` and do not disable your normal installed extensions.
+    extension_paths = {
+      -- "~/.pi/agent/extensions/my-extra-extension.ts",
+      -- "~/work/my-pi-extension",
+    },
   },
 }
 ```
@@ -134,3 +153,40 @@ If your leader is not comma, replace `,` with your leader key.
 :PiTerminal
 :PiTerminalNew
 ```
+
+## Pi extensions
+
+pi.nvim loads one small bundled Pi extension by default. It tells Pi that it is running from Neovim, encourages direct file edits, and adds a `/nvim` command inside Pi.
+
+Your normal Pi extensions still load too. The plugin does not pass `--no-extensions` unless you configure `extensions = false`.
+
+To add more extensions only for Neovim-launched Pi sessions:
+
+```lua
+{
+  "swairshah/pi.nvim",
+  opts = {
+    extension_paths = {
+      "~/.pi/agent/extensions/my-extra-extension.ts",
+      "~/work/my-pi-extension",
+    },
+  },
+}
+```
+
+To turn off the bundled Neovim extension:
+
+```lua
+{
+  "swairshah/pi.nvim",
+  opts = {
+    builtin_extension = false,
+  },
+}
+```
+
+## Notes
+
+- The plugin talks to Pi directly through RPC; it does not depend on another Neovim Pi plugin.
+- The first ask starts the background process. Later asks reuse it.
+- If Pi edits files on disk, loaded unmodified buffers are refreshed automatically.

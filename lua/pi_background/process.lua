@@ -63,6 +63,9 @@ local function get_pi_cmd()
   if cfg.model then
     vim.list_extend(cmd, { '--model', cfg.model })
   end
+  for _, path in ipairs(config.extension_paths()) do
+    vim.list_extend(cmd, { '--extension', path })
+  end
 
   return cmd
 end

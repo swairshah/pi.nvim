@@ -12,10 +12,19 @@ local defaults = {
   skills = true,
   extensions = true,
   tools = true,
+  -- Load the bundled Pi extension with Neovim-specific prompt guidance.
+  builtin_extension = true,
+  -- Extra Pi extension files/directories to pass with --extension.
+  -- These are loaded in addition to Pi's normal installed extensions.
+  extension_paths = {},
   keymaps = true,
   keymap_prefix = '<leader>p',
   window = {
     enabled = true,
+    -- top-right | center
+    position = 'top-right',
+    row = 1,
+    col_offset = 2,
     close_after_done_ms = 1200,
     close_after_stop_ms = 900,
     width = 0.45,
@@ -67,6 +76,26 @@ end
 
 function M.set_session_mode(mode)
   values.session_mode = mode
+end
+
+
+function M.plugin_root()
+  local source = debug.getinfo(1, 'S').source
+  if source:sub(1, 1) == '@' then
+    return vim.fn.fnamemodify(source:sub(2), ':p:h:h:h')
+  end
+  return vim.fn.getcwd()
+end
+
+function M.extension_paths()
+  local paths = {}
+  if values.builtin_extension then
+    table.insert(paths, M.plugin_root() .. '/extensions/nvim.ts')
+  end
+  for _, path in ipairs(values.extension_paths or {}) do
+    table.insert(paths, vim.fn.expand(path))
+  end
+  return paths
 end
 
 function M.get_pi_config()

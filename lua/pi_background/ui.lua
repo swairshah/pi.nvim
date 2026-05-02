@@ -101,12 +101,20 @@ function M.ensure()
   if not is_window_valid() then
     local width = math.min(cfg.window.max_width, math.max(cfg.window.min_width, math.floor(vim.o.columns * cfg.window.width)))
     local height = 4
+    local row = math.floor((vim.o.lines - height) / 2)
+    local col = math.floor((vim.o.columns - width) / 2)
+
+    if cfg.window.position == 'top-right' then
+      row = cfg.window.row or 1
+      col = math.max(0, vim.o.columns - width - (cfg.window.col_offset or 2))
+    end
+
     state.winid = vim.api.nvim_open_win(state.bufnr, false, {
       relative = 'editor',
       width = width,
       height = height,
-      row = math.floor((vim.o.lines - height) / 2),
-      col = math.floor((vim.o.columns - width) / 2),
+      row = row,
+      col = col,
       style = 'minimal',
       border = 'rounded',
       title = title(),

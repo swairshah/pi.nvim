@@ -34,6 +34,9 @@ local function args(opts)
   elseif session_mode == 'ephemeral' then
     table.insert(cmd, '--no-session')
   end
+  for _, path in ipairs(config.extension_paths()) do
+    vim.list_extend(cmd, { '--extension', path })
+  end
   return cmd
 end
 
