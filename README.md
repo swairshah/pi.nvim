@@ -12,7 +12,7 @@ This plugin keeps a single `pi --mode rpc` process running in the background, so
 - Lets you configure provider/model directly in your Lazy spec.
 - Reloads changed buffers after Pi edits files.
 - Includes a lightweight floating status window in the top-right corner.
-- Loads a bundled Pi extension with Neovim-specific prompt guidance.
+- Loads a bundled Neovim-only Pi extension placeholder.
 - Lets you pass extra Pi extensions from your Lazy config while keeping your normally installed Pi extensions enabled.
 
 ## Requirements
@@ -95,7 +95,7 @@ Full example with session behavior and key prefix:
       col_offset = 2,
     },
 
-    -- Load the bundled Neovim-aware Pi extension. Default: true.
+    -- Load the bundled Neovim-only Pi extension placeholder. Default: true.
     builtin_extension = true,
 
     -- Extra Pi extensions to load with this plugin. These are added with
@@ -156,7 +156,7 @@ If your leader is not comma, replace `,` with your leader key.
 
 ## Pi extensions
 
-pi.nvim loads one small bundled Pi extension by default. It tells Pi that it is running from Neovim, encourages direct file edits, and adds a `/nvim` command inside Pi.
+pi.nvim loads one bundled Neovim-only Pi extension by default. Right now it is an intentional no-op placeholder. It exists so you can add Neovim-specific Pi behavior later without affecting normal terminal `pi` sessions.
 
 Your normal Pi extensions still load too. The plugin does not pass `--no-extensions` unless you configure `extensions = false`.
 
