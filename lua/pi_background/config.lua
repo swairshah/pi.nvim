@@ -27,6 +27,7 @@ local defaults = {
     col_offset = 2,
     close_after_done_ms = 30000,
     close_after_stop_ms = 900,
+    close_on_interaction = true,
     width = 0.45,
     min_width = 40,
     max_width = 70,

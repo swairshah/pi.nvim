@@ -96,6 +96,8 @@ Full example with session behavior and key prefix:
       row = 1,
       col_offset = 2,
       close_after_done_ms = 30000,
+      close_after_stop_ms = 900,
+      close_on_interaction = true, -- if true, keep popup open while interacting with it
     },
 
     -- Load the bundled Neovim-only Pi extension that teaches Pi about <show> tags.

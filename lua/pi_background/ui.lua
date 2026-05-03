@@ -9,6 +9,8 @@ local state = {
   winid = nil,
   timer = nil,
   close_timer = nil,
+  close_delay = nil,
+  interaction_augroup = nil,
   status = 'idle',
   history = {},
   show_lines = {},
@@ -30,6 +32,46 @@ local function cancel_close_timer()
     state.close_timer:close()
     state.close_timer = nil
   end
+  state.close_delay = nil
+end
+
+local function clear_activity_autocmds()
+  if state.interaction_augroup then
+    pcall(vim.api.nvim_del_augroup_by_id, state.interaction_augroup)
+    state.interaction_augroup = nil
+  end
+end
+
+local function reset_close_timer()
+  local cfg = config.get()
+  if not state.close_timer or not cfg.window.close_on_interaction then
+    return
+  end
+  M.schedule_close(state.close_delay or cfg.window.close_after_done_ms)
+end
+
+local function is_popup_active()
+  return is_window_valid() and vim.api.nvim_get_current_win() == state.winid
+end
+
+local function setup_activity_autocmds()
+  clear_activity_autocmds()
+
+  local cfg = config.get()
+  if not is_window_valid() or not is_buffer_valid() or not cfg.window.close_on_interaction then
+    return
+  end
+
+  state.interaction_augroup = vim.api.nvim_create_augroup('PiBackgroundStatusPopupActivity', { clear = true })
+
+  vim.api.nvim_create_autocmd({'CursorMoved', 'CursorMovedI', 'WinEnter', 'BufEnter', 'TextChanged', 'TextChangedI'}, {
+    group = state.interaction_augroup,
+    callback = function()
+      if is_popup_active() then
+        reset_close_timer()
+      end
+    end,
+  })
 end
 
 local function title()
@@ -161,6 +203,8 @@ function M.ensure()
     vim.wo[state.winid].winfixbuf = true
   end
 
+  setup_activity_autocmds()
+
   if not state.timer then
     state.timer = vim.loop.new_timer()
     state.timer:start(100, 100, vim.schedule_wrap(function()
@@ -175,6 +219,7 @@ end
 
 function M.close()
   cancel_close_timer()
+  clear_activity_autocmds()
 
   if state.timer then
     state.timer:stop()
@@ -196,8 +241,9 @@ end
 
 function M.schedule_close(delay_ms)
   cancel_close_timer()
+  state.close_delay = delay_ms or config.get().window.close_after_done_ms
   state.close_timer = vim.loop.new_timer()
-  state.close_timer:start(delay_ms or config.get().window.close_after_done_ms, 0, vim.schedule_wrap(M.close))
+  state.close_timer:start(state.close_delay, 0, vim.schedule_wrap(M.close))
 end
 
 function M.set_streaming(streaming)
