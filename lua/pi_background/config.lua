@@ -14,6 +14,9 @@ local defaults = {
   tools = true,
   -- Load the bundled Neovim-only Pi extension.
   builtin_extension = true,
+  -- Reload file-backed buffers when Pi edits them.
+  -- If true, overwrite local unsaved changes when Pi modifies a file.
+  overwrite_modified_buffers = false,
   -- Extra Pi extension files/directories to pass with --extension.
   -- These are loaded in addition to Pi's normal installed extensions.
   extension_paths = {},

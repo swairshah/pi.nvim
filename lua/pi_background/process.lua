@@ -150,7 +150,7 @@ local function handle_event(event)
   elseif event.type == 'agent_end' then
     state.streaming = false
     ui.set_streaming(false)
-    buffers.reload_changed_file_buffers(state.file_snapshots)
+    buffers.reload_changed_file_buffers(state.file_snapshots, config.get().overwrite_modified_buffers)
     ui.set_status('done', 'Pi done', { close_after = config.get().window.close_after_done_ms })
   elseif event.type == 'extension_ui_request' then
     -- Background bridge intentionally ignores extension UI requests.

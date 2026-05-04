@@ -100,6 +100,10 @@ Full example with session behavior and key prefix:
       close_on_interaction = true, -- if true, keep popup open while interacting with it
     },
 
+    -- If true, Pi-updated buffers are reloaded even when unsaved local changes exist.
+    -- This can clobber local edits, so keep false unless you want hard auto-override.
+    overwrite_modified_buffers = false,
+
     -- Load the bundled Neovim-only Pi extension that teaches Pi about <show> tags.
     -- Default: true.
     builtin_extension = true,

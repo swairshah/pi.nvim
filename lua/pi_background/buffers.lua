@@ -42,8 +42,12 @@ function M.snapshot_loaded_file_buffers()
   return snapshots
 end
 
-local function reload_buffer_from_disk(bufnr, path)
-  if vim.fn.filereadable(path) ~= 1 or vim.bo[bufnr].modified then
+local function reload_buffer_from_disk(bufnr, path, overwrite_modified)
+  if vim.fn.filereadable(path) ~= 1 then
+    return false
+  end
+
+  if vim.bo[bufnr].modified and not overwrite_modified then
     return false
   end
 
@@ -60,13 +64,13 @@ local function reload_buffer_from_disk(bufnr, path)
   return true
 end
 
-function M.reload_changed_file_buffers(before_snapshots)
+function M.reload_changed_file_buffers(before_snapshots, overwrite_modified)
   before_snapshots = before_snapshots or {}
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
     if vim.api.nvim_buf_is_loaded(bufnr) and M.is_file_backed(bufnr) then
       local path = normalize_path(vim.api.nvim_buf_get_name(bufnr))
       if not signatures_equal(before_snapshots[path], file_signature(path)) then
-        reload_buffer_from_disk(bufnr, path)
+        reload_buffer_from_disk(bufnr, path, overwrite_modified)
       end
     end
   end
