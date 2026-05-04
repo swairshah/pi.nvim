@@ -14,6 +14,8 @@ local defaults = {
   tools = true,
   -- Load the bundled Neovim-only Pi extension.
   builtin_extension = true,
+  -- Load the repo-shipped Neovim context extension that adjusts text vs voice behavior.
+  nvim_context_extension = false,
   -- Reload file-backed buffers when Pi edits them.
   -- If true, overwrite local unsaved changes when Pi modifies a file.
   overwrite_modified_buffers = false,
@@ -96,6 +98,9 @@ function M.extension_paths()
   local paths = {}
   if values.builtin_extension then
     table.insert(paths, M.plugin_root() .. '/extensions/nvim.ts')
+  end
+  if values.nvim_context_extension then
+    table.insert(paths, M.plugin_root() .. '/extensions/pi-nvim-context.ts')
   end
   for _, path in ipairs(values.extension_paths or {}) do
     table.insert(paths, vim.fn.expand(path))

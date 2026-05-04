@@ -108,13 +108,15 @@ Full example with session behavior and key prefix:
     -- Default: true.
     builtin_extension = true,
 
+    -- Load the repo-shipped Neovim context extension that tunes text-only vs voice-on-demand behavior.
+    -- Default: false.
+    nvim_context_extension = false,
+
     -- Extra Pi extensions to load with this plugin. These are added with
     -- `pi --extension ...` and do not disable your normal installed extensions.
     extension_paths = {
       -- "~/.pi/agent/extensions/my-extra-extension.ts",
       -- "~/work/my-pi-extension",
-      -- Built-in extension shipped with this plugin for Neovim text/voice style:
-      -- vim.fn.stdpath('data') .. '/lazy/pi.nvim/extensions/pi-nvim-context.ts',
     },
   },
 }
@@ -178,25 +180,23 @@ To add more extensions only for Neovim-launched Pi sessions:
 {
   "swairshah/pi.nvim",
   opts = {
+    nvim_context_extension = true,
     extension_paths = {
       "~/.pi/agent/extensions/my-extra-extension.ts",
       "~/work/my-pi-extension",
-      vim.fn.stdpath("data") .. "/lazy/pi.nvim/extensions/pi-nvim-context.ts",
     },
   },
 }
 ```
 
-You can also use this repo-shipped `pi-nvim-context.ts` extension to tune output style for text-first vs voice-on-demand behavior.
+You can also keep only the plugin-bundled extensions and disable extension discovery:
 
 ```lua
 {
   "swairshah/pi.nvim",
   opts = {
-    extensions = false, -- optional: keep only paths passed here + builtin pi.nvim extension
-    extension_paths = {
-      vim.fn.stdpath("data") .. "/lazy/pi.nvim/extensions/pi-nvim-context.ts",
-    },
+    extensions = false, -- optional: keep only built-in and plugin-bundled extensions
+    nvim_context_extension = true,
   },
 }
 ```
