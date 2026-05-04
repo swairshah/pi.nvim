@@ -113,6 +113,8 @@ Full example with session behavior and key prefix:
     extension_paths = {
       -- "~/.pi/agent/extensions/my-extra-extension.ts",
       -- "~/work/my-pi-extension",
+      -- Built-in extension shipped with this plugin for Neovim text/voice style:
+      -- vim.fn.stdpath('data') .. '/lazy/pi.nvim/extensions/pi-nvim-context.ts',
     },
   },
 }
@@ -179,10 +181,27 @@ To add more extensions only for Neovim-launched Pi sessions:
     extension_paths = {
       "~/.pi/agent/extensions/my-extra-extension.ts",
       "~/work/my-pi-extension",
+      vim.fn.stdpath("data") .. "/lazy/pi.nvim/extensions/pi-nvim-context.ts",
     },
   },
 }
 ```
+
+You can also use this repo-shipped `pi-nvim-context.ts` extension to tune output style for text-first vs voice-on-demand behavior.
+
+```lua
+{
+  "swairshah/pi.nvim",
+  opts = {
+    extensions = false, -- optional: keep only paths passed here + builtin pi.nvim extension
+    extension_paths = {
+      vim.fn.stdpath("data") .. "/lazy/pi.nvim/extensions/pi-nvim-context.ts",
+    },
+  },
+}
+```
+
+
 
 Use `<show>` judiciously: short summaries, important findings, final status, or tiny snippets. Large code blocks and logs should stay out of the popup.
 
